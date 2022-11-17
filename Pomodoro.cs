@@ -1,12 +1,27 @@
 ﻿namespace Pomodoro
 {
-    internal   class Pomodoro
+    internal class Pomodoro
     {
-        
+
 
         private int _workDuration;
-        private int _restDuration; 
+        private int _restDuration;
+        private string _workStart;
+        private string _workStop;
+        private string _restStart;
+        private string _restStop;
+        private List<string> _workStartLogs = new ();
+        private List<string> _workStopLogs = new ();
+        private List<string> _restStartLogs = new();
+        private List<string> _restStopLogs = new ();
 
+        private void AddTimeLogs()
+        {
+            _restStartLogs.Add(_restStart);
+            _restStopLogs.Add(_restStop);
+            _workStartLogs.Add(_workStart);
+            _workStopLogs.Add(_workStop);
+        }
         public void PomodoroRule()
         {
             Console.WriteLine("Enter Work Duration In Minutes");
@@ -30,25 +45,29 @@
                 void WorkPomodoro()
                 {
                     DateTime WorkStartTime = DateTime.Now;
+                    pomodoro._workStart = WorkStartTime.ToLongTimeString();
+
                     for (int i = 0; i <= pomodoro._workDuration * 60; i++)
                     {
-                        Console.Write("Work Time Remains : {0}",workTime.ToString("mm:ss"));
+                        Console.Write("Work Time Remains : {0}", workTime.ToString("mm:ss"));
                         workTime = workTime.AddSeconds(-1);
                         Thread.Sleep(1000);
                         Console.Clear();
                     }
 
                     DateTime WorkStopTime = DateTime.Now;
+                    pomodoro._workStop = WorkStopTime.ToLongTimeString();
                     Console.WriteLine("Work Time Over");
                     Console.WriteLine("Rest Time Starts");
 
-                    Thread.Sleep(5000);
+                    Thread.Sleep(2000);
                     Console.Clear();
                 }
                 WorkPomodoro();
                 void RestPomodoro()
                 {
                     DateTime RestStartTime = DateTime.Now;
+                    pomodoro._restStart = RestStartTime.ToLongTimeString();
                     for (int i = 0; i <= pomodoro._restDuration * 60; i++)
                     {
                         Console.Write("Rest Time Remains : {0}", restTime.ToString("mm:ss"));
@@ -56,18 +75,23 @@
                         Thread.Sleep(1000);
                         Console.Clear();
                     }
+                    DateTime RestStopTime = DateTime.Now;
+                    pomodoro._restStop = RestStopTime.ToLongTimeString();
+                   
+                    AddTimeLogs();
                     Console.WriteLine("Rest Time Over, Press Y to start over or any other key to terminate");
                     var Option = Console.ReadLine().ToUpper();
-                    /* Option == "Y" ? RestartPomodoro() : return ; */
+                    
                     if (Option == "Y")
                     {
                         RestartPomodoro();
                     }
                     else
                     {
+                        DisplayLogs();
                         return;
                     }
-                    DateTime RestStopTime = DateTime.Now;
+                   
                 }
 
                 RestPomodoro();
@@ -78,11 +102,23 @@
                 RestartPomodoro();
             }
 
-
-            void RestartPomodoro()
+          
+        }
+      
+        private void DisplayLogs()
+        {
+            for (int i = 0; i < _workStartLogs.Count; i++)
             {
-                PomodoroRule();
+                
+                Console.WriteLine($"{i} : Started work at {_workStartLogs[i]} ");
+                Console.WriteLine($"{i} : Stoped work at {_workStopLogs[i]} ");
+                Console.WriteLine($"{i} : Started rest at {_restStartLogs[i]} ");
+                Console.WriteLine($"{i} : Stoped rest at {_restStopLogs[i]} ");
             }
         }
-}
+       private void RestartPomodoro()
+        {
+            PomodoroRule();
+        }
+    }
 }
